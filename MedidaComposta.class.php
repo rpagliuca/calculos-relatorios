@@ -4,6 +4,7 @@ class MedidaComposta extends Medida {
 
     protected $medidas = array();
     protected $composicaoIncerteza = array();
+    protected $medidasSource;
 
     public function __construct($name) {
         $this->maximaCacheFilename = 'maxima.cache';
@@ -11,24 +12,30 @@ class MedidaComposta extends Medida {
         return $this;
     }
 
-    public function setMedidas($medidas) {
-        // Array com objetos da classe Medida
-        $this->medidas = array();
-        $this->addMedida($medidas);
+    public function setMedidasSource($m) {
+        $this->medidasSource = $m;
         return $this;
     }
 
-    public function addMedida($medidas) {
-        // Array com objetos da classe Medida
-        foreach ($medidas as $medida) {
+    public function setMedidas($medidas) {
+        // Array com nomes de medidas
+        if (!$this->medidasSource) throw new Exception ('Uma fonte de medidas deve ser definida.');
+        foreach ($medidas as $nome) {
+            $medida = $this->medidasSource->getMedida($nome);
             $medidaComIndice = array($medida->getName() => $medida);
             $this->medidas = array_merge($this->medidas, $medidaComIndice);
         }
         return $this;
     }
 
+    public function findOutMedidas() {
+        $medidas = preg_match_all("~[\$]+?([A-Za-z0-9]{1,})[\$]+?~", $this->getExpression(), $matches);
+        $this->setMedidas($matches[1]);
+    }
+
     public function setExpression($expression) {
         $this->expression = $expression;
+        $this->findOutMedidas();
         return $this;
     }
 
@@ -84,21 +91,66 @@ class MedidaComposta extends Medida {
         $expression = preg_replace('~\$(.*)\$~U', '($1)', $this->getExpression());
         $comandoMaxima = "diff($expression,$variable)";
         $this->getCacheMaxima($comandoMaxima);
-        if (!($derivada = $this->getCacheMaxima($comandoMaxima))) {
-            exec("maxima --very-quiet --run-string='stardisp:true$ display2d:false$ $comandoMaxima;'", $derivada, $returnStatus);
+        $data = $this->getCacheMaxima($comandoMaxima);
+        if (!$data) {
+            $maximaCmd = "maxima --very-quiet --run-string='stardisp:true$ display2d:false$ $comandoMaxima; tex(%)$'"; 
+            exec($maximaCmd, $output, $returnStatus);
             if ($returnStatus != 0) {
                 throw new Exception('Maxima returned an error.');
             } else {
-                $derivada = trim(implode(' ', $derivada));
+                $derivada = array();
+                $tex = array();
+                $isTex = false;
+                foreach ($output as $linha) {
+                    if (strpos($linha, '$$') === 0) $isTex = true;
+                    if (!$isTex) {
+                        $derivada[] = $linha;
+                    } else {
+                        $tex[] = $linha;
+                    }
+                }
+                $derivada = implode(' ', $derivada);
+                $tex = implode(' ', $tex);
                 $derivada = str_replace(' ', '', $derivada);
                 foreach ($this->medidas as $medida) {
                     $var = $medida->getName();
                     $derivada = preg_replace("~([^A-Za-z]+?|^)$var([^A-Za-z]+?|$)~", "$1\$$var\$$2", $derivada);
                 }
-                $this->setCacheMaxima($comandoMaxima, $derivada);
+                $data = array('comando' => $comandoMaxima, 'derivada' => $derivada, 'tex' => $tex, 'derivandoEm' => $variable);
+                $this->setCacheMaxima($data);
             }
+        } else {
+            $derivada = $data['derivada'];
         }
         return $derivada;
+    }
+
+    public function getTex() {
+        $texData = array();
+        if (!isset($GLOBALS['cacheMaxima'])) {
+            $this->reloadCacheMaxima();
+        } else {
+            $linhasCache = $GLOBALS['cacheMaxima'];
+            foreach ($linhasCache as $linha) {
+                if (strpos($linha, ':::') !== FALSE) {
+                    $partes = explode(':::', $linha); 
+                    $descricao = trim($partes[0]);
+                    $comando = trim($partes[1]);
+                    $derivada = trim($partes[2]);
+                    $tex = trim($partes[3]);
+                    $data = array('descricao' => $descricao, 'derivada' => $derivada, 'tex' => $tex);
+                    $texData[] = $data;
+                }
+            }
+        }
+        return $texData;
+    }
+
+    public function debugTex() {
+        foreach ($this->getTex() as $tex) {
+            echo "<b>{$tex['descricao']}</b>";
+            echo "<pre>{$tex['tex']}</pre>";
+        }
     }
 
     protected function getCacheMaxima($comandoMaxima) {
@@ -111,10 +163,13 @@ class MedidaComposta extends Medida {
         foreach ($linhasCache as $linha) {
             if (strpos($linha, ':::') !== FALSE) {
                 $partes = explode(':::', $linha); 
-                $comando = trim($partes[0]);
-                $resposta = trim($partes[1]);
+                $descricao = trim($partes[0]);
+                $comando = trim($partes[1]);
+                $derivada = trim($partes[2]);
+                $tex = trim($partes[3]);
+                $data = array('derivada' => $derivada, 'tex' => $tex);
                 if ($comandoMaxima == $comando) {
-                   return $resposta; 
+                   return $data; 
                 }
             }
         }
@@ -126,10 +181,15 @@ class MedidaComposta extends Medida {
         $GLOBALS['cacheMaxima'] = file($this->maximaCacheFilename);
     }
 
-    protected function setCacheMaxima($comandoMaxima, $resposta) {
+    protected function setCacheMaxima($data) {
+        $name = $this->getName();
+        $derivadaEmRelacao = $data['derivandoEm'];
+        $comandoMaxima = $data['comando'];
+        $derivada = $data['derivada'];
+        $tex = $data['tex'];
         $comandoMaxima = trim($comandoMaxima);
-        $resposta = trim($resposta);
-        file_put_contents($this->maximaCacheFilename, "$comandoMaxima ::: $resposta\n", FILE_APPEND);
+        $resposta = trim($derivada);
+        file_put_contents($this->maximaCacheFilename, "$name, $derivadaEmRelacao ::: $comandoMaxima ::: $derivada ::: $tex\n", FILE_APPEND);
         $this->reloadCacheMaxima();
     }
 

@@ -8,6 +8,7 @@ Class Medida {
     protected $valor_formatado;
     protected $incerteza_formatada;
     protected $name;
+    protected $short_name;
 
     public function __construct($name) {
         $this->name = $name;
@@ -15,6 +16,15 @@ Class Medida {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function setShortName($sn) {
+        $this->short_name = $sn;
+        return $this;
+    }
+
+    public function getShortName() {
+        return $this->short_name;
     }
 
     public function setValor($value) {
