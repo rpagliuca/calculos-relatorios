@@ -18,13 +18,17 @@ Class Medida {
         return $this->name;
     }
 
-    public function setShortName($sn) {
-        $this->short_name = $sn;
+    public function setTexName($sn) {
+        $this->tex_name = $sn;
         return $this;
     }
 
-    public function getShortName() {
-        return $this->short_name;
+    public function getTexName() {
+        if ($this->tex_name) {
+            return $this->tex_name;
+        } else {
+            return $this->getName();
+        }
     }
 
     public function setValor($value) {

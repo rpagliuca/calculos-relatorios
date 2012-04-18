@@ -115,7 +115,9 @@ class MedidaComposta extends Medida {
                 foreach ($this->medidas as $medida) {
                     $var = $medida->getName();
                     $derivada = preg_replace("~([^A-Za-z]+?|^)$var([^A-Za-z]+?|$)~", "$1\$$var\$$2", $derivada);
+                    $tex = preg_replace("~([^A-Za-z]+?|^)$var([^A-Za-z]+?|$)~", "$1{$medida->getTexName()}$2", $tex);
                 }
+                $tex = '$$\frac{\delta ' . $this->getTexName() . '}{\delta ' . $variable . '} = $$ ' . $tex;
                 $data = array('comando' => $comandoMaxima, 'derivada' => $derivada, 'tex' => $tex, 'derivandoEm' => $variable);
                 $this->setCacheMaxima($data);
             }
