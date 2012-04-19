@@ -9,6 +9,7 @@ Class Medida {
     protected $incerteza_formatada;
     protected $name;
     protected $short_name;
+    protected $modo_incerteza;
 
     public function __construct($name) {
         $this->name = $name;
@@ -42,11 +43,24 @@ Class Medida {
 
     public function setIncerteza($value) {
         $this->incerteza = $value;
+        $this->setModoIncerteza('manual');
         return $this;
     }
 
     public function getIncerteza() {
         return $this->incerteza;
+    }
+
+    public function setModoIncerteza($modo) {
+        $this->modo_incerteza = $modo;
+    }
+
+    public function getModoIncerteza() {
+        if ($this->modo_incerteza) {
+            return $this->modo_incerteza;
+        } else {
+            return 'sem incerteza';
+        }
     }
 
     public function setOrdem($value) {
@@ -122,6 +136,7 @@ Class Medida {
         $this->setIncerteza($incerteza);
         $this->setValorFormatado($this->number_significant($this->arredondar($valor, $ordem),$ordem));
         $this->setIncertezaFormatada($this->arredondar($incerteza, $ordem));
+        $this->setModoIncerteza(100*$porcentagem . '% + ' . $digitos . 'd');
         return $this;
     }
 
@@ -169,7 +184,7 @@ Class Medida {
     }
 
     public function getNameAndSI() {
-        return $this->getName() . ': ' . $this->getFullSI();
+        return $this->getName() . ': ' . $this->getFullSI() . ' (' . $this->getModoIncerteza() . ')';
     }
 }
 

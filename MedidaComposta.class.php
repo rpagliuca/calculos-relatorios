@@ -66,6 +66,7 @@ class MedidaComposta extends Medida {
         foreach ($termos as $var => $termo) {
             $this->composicaoIncerteza[$var] = pow($termo,2)/$somaQuadrados;
         }
+        $this->setModoIncerteza('propagada');
         return sqrt($somaQuadrados);
     }
 
