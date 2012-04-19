@@ -22,8 +22,10 @@ class MedidaComposta extends Medida {
         if (!$this->medidasSource) throw new Exception ('Uma fonte de medidas deve ser definida.');
         foreach ($medidas as $nome) {
             $medida = $this->medidasSource->getMedida($nome);
-            $medidaComIndice = array($medida->getName() => $medida);
-            $this->medidas = array_merge($this->medidas, $medidaComIndice);
+            if ($medida) {
+                $medidaComIndice = array($medida->getName() => $medida);
+                $this->medidas = array_merge($this->medidas, $medidaComIndice);
+            }
         }
         return $this;
     }
@@ -114,8 +116,8 @@ class MedidaComposta extends Medida {
                 $derivada = str_replace(' ', '', $derivada);
                 foreach ($this->medidas as $medida) {
                     $var = $medida->getName();
-                    $derivada = preg_replace("~([^A-Za-z]+?|^)$var([^A-Za-z]+?|$)~", "$1\$$var\$$2", $derivada);
-                    $tex = preg_replace("~([^A-Za-z]+?|^)$var([^A-Za-z]+?|$)~", "$1{$medida->getTexName()}$2", $tex);
+                    $derivada = preg_replace("~([^A-Za-z0-9]+?|^)$var([^A-Za-z0-9]+?|$)~", "$1\$$var\$$2", $derivada);
+                    $tex = preg_replace("~([^A-Za-z0-9]+?|^)$var([^A-Za-z0-9]+?|$)~", "$1{$medida->getTexName()}$2", $tex);
                 }
                 $tex = '$$\frac{\delta ' . $this->getTexName() . '}{\delta ' . $this->medidasSource->getMedida($variable)->getTexName() . '} = ' . substr($tex, 2);
                 $data = array('comando' => $comandoMaxima, 'derivada' => $derivada, 'tex' => $tex, 'derivandoEm' => $variable);
@@ -149,6 +151,7 @@ class MedidaComposta extends Medida {
     }
 
     public function debugTex() {
+        $this->getTex(); // Fixing a bug
         foreach ($this->getTex() as $tex) {
             echo "<pre>{$tex['tex']}</pre>";
         }

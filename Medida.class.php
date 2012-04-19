@@ -167,6 +167,10 @@ Class Medida {
     public function getFullSI($separador = '&#177;') {
         return "{$this->getSI()} $separador {$this->getIncertezaSI()}";
     }
+
+    public function getNameAndSI() {
+        return $this->getName() . ': ' . $this->getFullSI();
+    }
 }
 
 ?>
