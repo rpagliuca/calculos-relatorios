@@ -127,16 +127,17 @@ Class Medida {
         }
     }
 
-    public function formatarIncertezaPercentual($porcentagem, $digitos) {
+    public function formatarIncertezaPercentual($porcentagem, $manual) {
         $valor = $this->getValor();
         $incerteza = $valor * $porcentagem;
-        $ordem = $this->getOrdemPrimeiroDigitoSignificativo($incerteza);
-        $incerteza = $incerteza + $digitos*pow(10, $ordem);
+        //$ordem = $this->getOrdemPrimeiroDigitoSignificativo($incerteza);
+        //$incerteza = $incerteza + $digitos*pow(10, $ordem);
+        $incerteza = $incerteza + $manual;
         $ordem = $this->getOrdemPrimeiroDigitoSignificativo($incerteza); // Algarismo significativo pode ter mudado após o acréscimo da linha anterior.
         $this->setIncerteza($incerteza);
         $this->setValorFormatado($this->number_significant($this->arredondar($valor, $ordem),$ordem));
         $this->setIncertezaFormatada($this->arredondar($incerteza, $ordem));
-        $this->setModoIncerteza(100*$porcentagem . '% + ' . $digitos . 'd');
+        $this->setModoIncerteza(100*$porcentagem . '% + ' . $manual);
         return $this;
     }
 
