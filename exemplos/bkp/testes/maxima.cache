@@ -1,2 +1,0 @@
-diff((massa)/(volume), massa) ::: 1/$volume$
-diff((massa)/(volume), volume) ::: -$massa$/$volume$^2
