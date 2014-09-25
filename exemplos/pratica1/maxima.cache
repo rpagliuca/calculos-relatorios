@@ -1,0 +1,23 @@
+
+diff(sqrt(10/7*(gravidade)*(altura))*((massa)), gravidade) ::: sqrt(10)*$altura$*$massa$/(2*sqrt(7)*sqrt($altura$*$gravidade$))
+diff(sqrt(10/7*(gravidade)*(altura))*((massa)), altura) ::: sqrt(10)*$gravidade$*$massa$/(2*sqrt(7)*sqrt($altura$*$gravidade$))
+diff(sqrt(10/7*(gravidade)*(altura))*((massa)), massa) ::: sqrt(10)*sqrt($altura$*$gravidade$)/sqrt(7)
+diff(sqrt(2*(z0)/(gravidade)), z0) ::: 1/(sqrt(2)*$gravidade$*sqrt($z0$/$gravidade$))
+diff(sqrt(2*(z0)/(gravidade)), gravidade) ::: -$z0$/(sqrt(2)*$gravidade$^2*sqrt($z0$/$gravidade$))
+diff((massa)*(coordenada)/(tf), massa) ::: $coordenada$/$tf$
+diff((massa)*(coordenada)/(tf), coordenada) ::: $massa$/$tf$
+diff((massa)*(coordenada)/(tf), tf) ::: -$coordenada$*$massa$/$tf$^2
+diff(0  + (momentum_1)  + (momentum_2) , momentum_1) ::: 1
+diff(0  + (momentum_1)  + (momentum_2) , momentum_2) ::: 1
+diff(1/2*(massa)*((alcance)/(tf))*((alcance)/(tf)), massa) ::: $alcance$^2/(2*$tf$^2)
+diff(1/2*(massa)*((alcance)/(tf))*((alcance)/(tf)), alcance) ::: $alcance$*$massa$/$tf$^2
+diff(1/2*(massa)*((alcance)/(tf))*((alcance)/(tf)), tf) ::: -$alcance$^2*$massa$/$tf$^3
+diff(5/7*(massa)*(gravidade)*(altura), gravidade) ::: 5*$altura$*$massa$/7
+diff(5/7*(massa)*(gravidade)*(altura), altura) ::: 5*$gravidade$*$massa$/7
+diff(5/7*(massa)*(gravidade)*(altura), massa) ::: 5*$altura$*$gravidade$/7
+diff(1/2*(massa)*(0+ ((posicao_1)/(tf))*((posicao_1)/(tf)) + ((posicao_2)/(tf))*((posicao_2)/(tf)) + ((posicao_3)/(tf))*((posicao_3)/(tf)) + ((posicao_4)/(tf))*((posicao_4)/(tf)) ), posicao_1) ::: $massa$*$posicao_1$/$tf$^2
+diff(1/2*(massa)*(0+ ((posicao_1)/(tf))*((posicao_1)/(tf)) + ((posicao_2)/(tf))*((posicao_2)/(tf)) + ((posicao_3)/(tf))*((posicao_3)/(tf)) + ((posicao_4)/(tf))*((posicao_4)/(tf)) ), posicao_2) ::: $massa$*$posicao_2$/$tf$^2
+diff(1/2*(massa)*(0+ ((posicao_1)/(tf))*((posicao_1)/(tf)) + ((posicao_2)/(tf))*((posicao_2)/(tf)) + ((posicao_3)/(tf))*((posicao_3)/(tf)) + ((posicao_4)/(tf))*((posicao_4)/(tf)) ), posicao_3) ::: $massa$*$posicao_3$/$tf$^2
+diff(1/2*(massa)*(0+ ((posicao_1)/(tf))*((posicao_1)/(tf)) + ((posicao_2)/(tf))*((posicao_2)/(tf)) + ((posicao_3)/(tf))*((posicao_3)/(tf)) + ((posicao_4)/(tf))*((posicao_4)/(tf)) ), posicao_4) ::: $massa$*$posicao_4$/$tf$^2
+diff(1/2*(massa)*(0+ ((posicao_1)/(tf))*((posicao_1)/(tf)) + ((posicao_2)/(tf))*((posicao_2)/(tf)) + ((posicao_3)/(tf))*((posicao_3)/(tf)) + ((posicao_4)/(tf))*((posicao_4)/(tf)) ), massa) ::: ($posicao_4$^2/$tf$^2+$posicao_3$^2/$tf$^2+$posicao_2$^2/$tf$^2+$posicao_1$^2/$tf$^2)/2
+diff(1/2*(massa)*(0+ ((posicao_1)/(tf))*((posicao_1)/(tf)) + ((posicao_2)/(tf))*((posicao_2)/(tf)) + ((posicao_3)/(tf))*((posicao_3)/(tf)) + ((posicao_4)/(tf))*((posicao_4)/(tf)) ), tf) ::: $massa$*(-2*$posicao_4$^2/$tf$^3-2*$posicao_3$^2/$tf$^3-2*$posicao_2$^2/$tf$^3                           -2*$posicao_1$^2/$tf$^3)  /2
